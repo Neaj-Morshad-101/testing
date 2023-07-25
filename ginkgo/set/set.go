@@ -8,5 +8,5 @@ func NewSet() *Set {
 }
 
 func (st *Set) IsEmpty() bool {
-	return false
+	return true
 }
