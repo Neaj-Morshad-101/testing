@@ -1,7 +1,6 @@
 package books
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -28,6 +27,18 @@ func (b *Book) Category() string {
 
 func (b *Book) AuthorLastName() string {
 	words := strings.Split(b.Author, " ")
-	fmt.Println(words)
+	//fmt.Println(words)
 	return words[len(words)-1] // last word
+}
+
+func (b *Book) IsValid() bool {
+	return true
+}
+
+func (b *Book) AuthorFirstName() string {
+	words := strings.Split(b.Author, " ")
+	if len(words) == 1 {
+		return ""
+	}
+	return words[0]
 }

@@ -9,7 +9,7 @@ import (
 )
 
 var _ = Describe("Books", func() {
-	var foxInSocks, lesMis *books.Book
+	var foxInSocks, lesMis, book *books.Book
 
 	BeforeEach(func() {
 		lesMis = &books.Book{
@@ -23,6 +23,12 @@ var _ = Describe("Books", func() {
 			Author: "Dr. Seuss",
 			Pages:  24,
 		}
+		book = &books.Book{
+			Title:  "Les Miserables",
+			Author: "Victor Hugo",
+			Pages:  2783,
+		}
+		Expect(book.IsValid()).To(BeTrue())
 	})
 
 	Describe("Categorizing books", func() {
@@ -39,14 +45,24 @@ var _ = Describe("Books", func() {
 		})
 	})
 
-	It("can extract the author's last name", func() {
-		book := &books.Book{
-			Title:  "Les Miserables",
-			Author: "Victor Hugo",
-			Pages:  2783,
-		}
+	Describe("Validating Author Name", func() {
+		It("can extract the author's last name", func() {
+			Expect(book.AuthorLastName()).To(Equal("Hugo"))
+		})
+		It("interprets a single author name as a last name", func() {
+			book.Author = "Hugo"
+			Expect(book.AuthorLastName()).To(Equal("Hugo"))
+		})
 
-		Expect(book.AuthorLastName()).To(Equal("Hugo"))
+		It("can extract the author's first name", func() {
+			Expect(book.AuthorFirstName()).To(Equal("Victor"))
+		})
+
+		It("returns no first name when there is a single author name", func() {
+			book.Author = "Hugo"
+			Expect(book.AuthorFirstName()).To(BeZero()) //BeZero asserts the value is the zero-value for its type.  In this case: ""
+		})
+
 	})
 
 	It("can fetch a summary of the book from the library service", func(ctx SpecContext) {
