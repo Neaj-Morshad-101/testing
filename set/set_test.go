@@ -21,7 +21,7 @@ var _ = Describe("Set", func() {
 
 		Context("When the set contains items", func() {
 			It("Should not be empty", func() {
-				st.Add("red")
+				st.Add("Red")
 				Expect(st.IsEmpty()).To(BeFalse())
 			})
 		})
@@ -45,6 +45,21 @@ var _ = Describe("Set", func() {
 
 					Expect(st.Size()).To(Equal(2))
 				})
+			})
+		})
+	})
+
+	Describe("Contains", func() {
+		Context("When Red has not been added", func() {
+			It("Should not contain Red", func() {
+				Expect(st.Contains("Red")).To(BeFalse())
+			})
+		})
+
+		Context("When Red has been added", func() {
+			It("Should contain Red", func() {
+				st.Add("Red")
+				Expect(st.Contains("Red")).To(BeTrue())
 			})
 		})
 	})
