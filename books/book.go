@@ -1,5 +1,10 @@
 package books
 
+import (
+	"fmt"
+	"strings"
+)
+
 const (
 	CategoryNovel        string = "Novel"
 	CategoryShortStory   string = "ShortStory"
@@ -19,4 +24,10 @@ func (b *Book) Category() string {
 		return CategoryShortStory
 	}
 	return CategoryThreeHundred
+}
+
+func (b *Book) AuthorLastName() string {
+	words := strings.Split(b.Author, " ")
+	fmt.Println(words)
+	return words[len(words)-1] // last word
 }
