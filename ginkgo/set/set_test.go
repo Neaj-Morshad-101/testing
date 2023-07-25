@@ -1,10 +1,9 @@
 package set_test
 
 import (
+	"github.com/Neaj-Morshad-101/testing/ginkgo/set"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"ginkgo/set"
 )
 
 var _ = Describe("Set", func() {
