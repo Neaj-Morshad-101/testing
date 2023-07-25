@@ -1,22 +1,22 @@
 package books_test
 
 import (
-	"github.com/Neaj-Morshad-101/testing/books"
+	. "github.com/Neaj-Morshad-101/testing/books"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Books", func() {
-	var foxInSocks, lesMis *books.Book
+	var foxInSocks, lesMis *Book
 
 	BeforeEach(func() {
-		lesMis = &books.Book{
+		lesMis = &Book{
 			Title:  "Les Miserables",
 			Author: "Victor Hugo",
 			Pages:  2783,
 		}
 
-		foxInSocks = &books.Book{
+		foxInSocks = &Book{
 			Title:  "Fox In Socks",
 			Author: "Dr. Seuss",
 			Pages:  24,
@@ -26,13 +26,13 @@ var _ = Describe("Books", func() {
 	Describe("Categorizing books", func() {
 		Context("with more than 300 pages", func() {
 			It("should be a novel", func() {
-				Expect(lesMis.Category()).To(Equal(books.CategoryNovel))
+				Expect(lesMis.Category()).To(Equal(CategoryNovel))
 			})
 		})
 
 		Context("with fewer than 300 pages", func() {
 			It("should be a short story", func() {
-				Expect(foxInSocks.Category()).To(Equal(books.CategoryShortStory))
+				Expect(foxInSocks.Category()).To(Equal(CategoryShortStory))
 			})
 		})
 	})
