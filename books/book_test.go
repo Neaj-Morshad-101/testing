@@ -1,3 +1,6 @@
+// Need to update book.go before running tests / specs
+// Some functionality need to be added. Because they are in the test file.
+
 package books_test
 
 import (
@@ -5,6 +8,7 @@ import (
 	"github.com/Neaj-Morshad-101/testing/library"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"os"
 	"time"
 )
 
@@ -128,6 +132,63 @@ var _ = Describe("Books", func() {
 
 			It("errors", func() {
 				Expect(err).To(MatchError(books.ErrIncompleteJSON))
+			})
+		})
+	})
+
+	Describe("Reporting book weight", func() {
+		var book *books.Book
+		BeforeEach(func() {
+			book = &books.Book{
+				Title:  "Les Miserables",
+				Author: "Victor Hugo",
+				Pages:  2783,
+				Weight: 500,
+			}
+			originalWeightUnits := os.Getenv("WEIGHT_UNITS")
+			DeferCleanup(func() {
+				err := os.Setenv("WEIGHT_UNITS", originalWeightUnits)
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+
+		AfterEach(func() {
+			err := os.Setenv("WEIGHT_UNITS", originalWeightUnits)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Context("with no WEIGHT_UNITS environment set", func() {
+			BeforeEach(func() {
+				err := os.Clearenv("WEIGHT_UNITS")
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("reports the weight in grams", func() {
+				Expect(book.HumanReadableWeight()).To(Equal("500g"))
+			})
+		})
+
+		Context("when WEIGHT_UNITS is set to oz", func() {
+			BeforeEach(func() {
+				err := os.Setenv("WEIGHT_UNITS", "oz")
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("reports the weight in ounces", func() {
+				Expect(book.HumanReadableWeight()).To(Equal("17.6oz"))
+			})
+		})
+
+		Context("when WEIGHT_UNITS is invalid", func() {
+			BeforeEach(func() {
+				err := os.Setenv("WEIGHT_UNITS", "smoots")
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("errors", func() {
+				weight, err := book.HumanReadableWeight()
+				Expect(weight).To(BeZero())
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})

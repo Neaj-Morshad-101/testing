@@ -1,4 +1,6 @@
 # testing
+
+## Resources: Ginkgo and Gomega
 https://onsi.github.io/ginkgo/
 https://onsi.github.io/gomega/
 
@@ -12,13 +14,13 @@ Gomega is a matcher/assertion library.
 
 
 
-Installing Ginkgo
+### Installing Ginkgo:
 Ginkgo uses go modules. To add Ginkgo to your project, assuming you have a go.mod file setup, just go install it:
 go install github.com/onsi/ginkgo/v2/ginkgo
 go get github.com/onsi/gomega/...
 
 
-Useful commands: 
+#### Useful commands: 
 `ginkgo bootstrap` //  add a Ginkgo suite to books pkg 
 This will generate a file named books_suite_test.go in the books directory.
 
