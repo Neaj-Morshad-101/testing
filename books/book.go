@@ -26,16 +26,25 @@ func (b *Book) Category() string {
 }
 
 func (b *Book) AuthorLastName() string {
+	if b.Author == "" {
+		return ""
+	}
 	words := strings.Split(b.Author, " ")
 	//fmt.Println(words)
 	return words[len(words)-1] // last word
 }
 
 func (b *Book) IsValid() bool {
+	if b.Author == "" {
+		return false
+	}
 	return true
 }
 
 func (b *Book) AuthorFirstName() string {
+	if b.Author == "" {
+		return ""
+	}
 	words := strings.Split(b.Author, " ")
 	if len(words) == 1 {
 		return ""

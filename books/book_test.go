@@ -12,17 +12,6 @@ var _ = Describe("Books", func() {
 	var foxInSocks, lesMis, book *books.Book
 
 	BeforeEach(func() {
-		lesMis = &books.Book{
-			Title:  "Les Miserables",
-			Author: "Victor Hugo",
-			Pages:  2783,
-		}
-
-		foxInSocks = &books.Book{
-			Title:  "Fox In Socks",
-			Author: "Dr. Seuss",
-			Pages:  24,
-		}
 		book = &books.Book{
 			Title:  "Les Miserables",
 			Author: "Victor Hugo",
@@ -32,6 +21,21 @@ var _ = Describe("Books", func() {
 	})
 
 	Describe("Categorizing books", func() {
+		BeforeEach(func() {
+			lesMis = &books.Book{
+				Title:  "Les Miserables",
+				Author: "Victor Hugo",
+				Pages:  2783,
+			}
+
+			foxInSocks = &books.Book{
+				Title:  "Fox In Socks",
+				Author: "Dr. Seuss",
+				Pages:  24,
+			}
+			Expect(lesMis.IsValid()).To(BeTrue())
+			Expect(foxInSocks.IsValid()).To(BeTrue())
+		})
 		Context("with more than 300 pages", func() {
 			It("should be a novel", func() {
 				Expect(lesMis.Category()).To(Equal(books.CategoryNovel))
@@ -45,24 +49,87 @@ var _ = Describe("Books", func() {
 		})
 	})
 
-	Describe("Validating Author Name", func() {
-		It("can extract the author's last name", func() {
-			Expect(book.AuthorLastName()).To(Equal("Hugo"))
+	Describe("Extracting the author's first and last name", func() {
+		Context("When the author has both names", func() {
+			It("can extract the author's last name", func() {
+				Expect(book.AuthorLastName()).To(Equal("Hugo"))
+			})
+			It("can extract the author's first name", func() {
+				Expect(book.AuthorFirstName()).To(Equal("Victor"))
+			})
 		})
-		It("interprets a single author name as a last name", func() {
-			book.Author = "Hugo"
-			Expect(book.AuthorLastName()).To(Equal("Hugo"))
+		Context("When the author only has one name", func() {
+			BeforeEach(func() {
+				book.Author = "Hugo"
+			})
+			It("interprets a single author name as a last name", func() {
+				Expect(book.AuthorLastName()).To(Equal("Hugo"))
+			})
+			It("returns no first name when there is a single author name", func() {
+				Expect(book.AuthorFirstName()).To(BeZero()) //BeZero asserts the value is the zero-value for its type.  In this case: ""
+			})
 		})
 
-		It("can extract the author's first name", func() {
-			Expect(book.AuthorFirstName()).To(Equal("Victor"))
+		Context("When the author has a middle name", func() {
+			BeforeEach(func() {
+				book.Author = "Victor Marie Hugo"
+			})
+
+			It("can extract the author's last name", func() {
+				Expect(book.AuthorLastName()).To(Equal("Hugo"))
+			})
+
+			It("can extract the author's first name", func() {
+				Expect(book.AuthorFirstName()).To(Equal("Victor"))
+			})
 		})
 
-		It("returns no first name when there is a single author name", func() {
-			book.Author = "Hugo"
-			Expect(book.AuthorFirstName()).To(BeZero()) //BeZero asserts the value is the zero-value for its type.  In this case: ""
+		Context("When the author has no name", func() {
+			It("should not be a valid book and returns empty for first and last name", func() {
+				book.Author = ""
+				Expect(book.IsValid()).To(BeFalse())
+				Expect(book.AuthorLastName()).To(BeZero())
+				Expect(book.AuthorFirstName()).To(BeZero())
+			})
 		})
 
+	})
+
+	Describe("some JSON decoding edge cases", func() {
+		var book *books.Book
+		var err error
+		var json string
+		JustBeforeEach(func() {
+			book, err = NewBookFromJSON(json)
+			Expect(book).To(BeNil())
+		})
+
+		When("the JSON fails to parse", func() {
+			BeforeEach(func() {
+				json = `{
+				"title":"Les Miserables",
+				"author":"Victor Hugo",
+				"pages":2783oops
+				}`
+			})
+
+			It("errors", func() {
+				Expect(err).To(MatchError(books.ErrInvalidJSON))
+			})
+		})
+
+		When("the JSON is incomplete", func() {
+			BeforeEach(func() {
+				json = `{
+        		"title":"Les Miserables",
+       	 		"author":"Victor Hugo",
+      			}`
+			})
+
+			It("errors", func() {
+				Expect(err).To(MatchError(books.ErrIncompleteJSON))
+			})
+		})
 	})
 
 	It("can fetch a summary of the book from the library service", func(ctx SpecContext) {
