@@ -7,6 +7,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+var dbRunner *db.Runner
+var dbClient *db.Client
+
 func TestBooks(t *testing.T) {
 	// RegisterFailHandler(Fail) is the single line of glue code connecting Ginkgo to Gomega.
 	// If we were to avoid dot-imports this would read as gomega.RegisterFailHandler(ginkgo.Fail)
@@ -17,3 +20,19 @@ func TestBooks(t *testing.T) {
 
 	RunSpecs(t, "Books Suite")
 }
+
+var _ = BeforeSuite(func() {
+	dbRunner = db.NewRunner()
+	Expect(dbRunner.Start()).To(Succeed())
+
+	dbClient = db.NewClient()
+	Expect(dbClient.Connect(dbRunner.Address())).To(Succeed())
+})
+
+var _ = AfterSuite(func() {
+	Expect(dbRunner.Stop()).To(Succeed())
+})
+
+var _ = AfterEach(func() {
+	Expect(dbClient.Clear()).To(Succeed())
+})

@@ -146,9 +146,8 @@ var _ = Describe("Books", func() {
 				Weight: 500,
 			}
 			originalWeightUnits := os.Getenv("WEIGHT_UNITS")
-			DeferCleanup(func() {
-				err := os.Setenv("WEIGHT_UNITS", originalWeightUnits)
-				Expect(err).NotTo(HaveOccurred())
+			DeferCleanup(func() error {
+				return os.Setenv("WEIGHT_UNITS", originalWeightUnits)
 			})
 		})
 
@@ -191,6 +190,24 @@ var _ = Describe("Books", func() {
 				Expect(err).To(HaveOccurred())
 			})
 		})
+	})
+
+	Describe("Saving books to a database", func() {
+		AfterEach(func() {
+			dbClient.Clear() //clear out the database between tests
+		})
+
+		JustAfterEach(func() {
+			if CurrentSpecReport().Failed() {
+				AddReportEntry("db-dump", dbClient.Dump())
+			}
+		})
+
+		It("saves the book", func() {
+			err := dbClient.Save(book)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 	})
 
 	It("can fetch a summary of the book from the library service", func(ctx SpecContext) {
